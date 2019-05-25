@@ -1,0 +1,22 @@
+*::selection {
+  background-color: #222;
+  color: silver;
+}
+
+code::selection {
+  background-color: green;
+  color: lightgreen;
+}
+
+pre {
+  color: silver;
+  background-color: #333;
+  border-radius: 5px;
+  overflow: hidden;
+  padding-left: 0.5rem;
+  transition: background-color 1s cubic-bezier(0.71, 0, 0.07, 1);
+}
+
+pre:hover {
+  background-color: black;
+}

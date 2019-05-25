@@ -1,0 +1,21 @@
+{
+  "short_name": "PWA",
+  "name": "Serverless React PWA on AWS",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "src": "./images/logo-192x192.png",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "src": "./images/logo-512x512.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/Serverless-React-PWA-on-AWS/",
+  "display": "standalone",
+  "background_color": "#343634",
+  "scope": "/Serverless-React-PWA-on-AWS/",
+  "theme_color": "#343634"
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+
+    <title>Serverless React PWA on AWS</title>
+
+    <meta name="author" content="Gianluca Casati">
+    <meta name="description" content="How to create a serverless Progressive Web App, using React, Redux, React Router, TypeScript on frontend and AWS Lambda, Cloudfront, Amazon SES, API Gateway for a zero maintenance required backend.">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="theme-color" content="#eeeeee">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#eeeeee">
+
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="apple-mobile-web-app-title" content="React PWA">
+    <meta name="application-name" content="React PWA">
+
+    <style>
+      html {
+        color: #333333;
+        font-family: "Lucida Console", Monaco, monospace;
+      }
+
+      body {
+        background-color: #eeeeee;
+      }
+
+      noscript {
+        color: magenta;
+        text-align: center;
+        font-size: 5vh;
+      }
+    </style>
+
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Serverless React PWA on AWS</h1>
+
+    <noscript>
+      <p>Opsss... your JavaScript looks disabled 😒</p>
+    </noscript>
+
+    <h2>Homepage</h2>
+
+    <p>
+      Create your <em>index.html</em>.
+    </p>
+
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h2>The manifest</h2>
+
+    <p>
+      Create a <em>manifest.json</em> file.
+    </p>
+
+    <pre><code>{
+  "short_name": "React PWA",
+  "name": "Serverless React PWA on AWS",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "src": "/images/logo-192x192.png",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "src": "/images/logo-512x512.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#333333",
+  "scope": "/",
+  "theme_color": "#333333"
+}</code></pre>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('cache.js', { scope: '/' })
+        })
+      }
+    </script>
+  </body>
+</html>
