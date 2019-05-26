@@ -5,7 +5,8 @@ const CACHED_URLS = [
   '/',
   '/manifest.json',
   '/images/logo-192x192.png',
-  '/images/logo-512x512.png'
+  '/images/logo-512x512.png',
+  '/style.css'
 ]
 
 // Open cache on install.

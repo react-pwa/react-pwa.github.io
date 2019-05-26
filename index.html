@@ -44,20 +44,97 @@
       <p>Opsss... your JavaScript looks disabled 😒</p>
     </noscript>
 
+    <h2>Create your brand</h2>
+
+    <p>
+      Give an <b>identity</b> to your app. Start with the <em>name</em> and provide a nice description.
+      Once you give birth to it, choose also a theme color.
+      Ah! You also need to create a logo. Notice that it should fit in a circle. Export the logo to a <em>favicon.ico</em>.
+      You also need to export your logo to two square PNG images, with sizes 192 and 512 pixels respectively.
+    </p>
+
     <h2>Homepage</h2>
 
     <p>
-      Create your <em>index.html</em>.
+      Start with your <em>index.html</em>. Follows a working example, of course you are going to change title, author, description, colors, fonts, etc.
+      In particular you need to provide a style tag with few instructions to render your Homepage as a standalone file, as well as some message in case JavaScript is disabled.
+      Don't worry! <a href="https://developers.google.com/web/tools/lighthouse/" target="_blank">Lighthouse</a> will guide you.
+      Something like the following is the bare minimum.
     </p>
 
     <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html&gt;
   &lt;head&gt;
+    &lt;meta charset="UTF-8">
+
+    &lt;title>Serverless React PWA on AWS&lt;/title>
+
+    &lt;meta name="author" content="Gianluca Casati"&gt;
+    &lt;meta name="description" content="How to create a serverless Progressive Web App, using React, Redux, React Router, TypeScript on frontend and AWS Lambda, Cloudfront, Amazon SES, API Gateway for a zero maintenance required backend."&gt;
+
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+
+    &lt;meta name="theme-color" content="#eeeeee"&gt;
+    &lt;meta name="apple-mobile-web-app-status-bar-style" content="#eeeeee"&gt;
+
+    &lt;link rel="manifest" href="manifest.json"&gt;
+
+    &lt;meta name="apple-mobile-web-app-title" content="React PWA"&gt;
+    &lt;meta name="application-name" content="React PWA"&gt;
+
+    &lt;style&gt;
+      html {
+        color: #333333;
+        font-family: "Lucida Console", Monaco, monospace;
+      }
+
+      body {
+        background-color: #eeeeee;
+      }
+
+      noscript {
+        color: magenta;
+        text-align: center;
+        font-size: 5vh;
+      }
+    &lt;/style&gt;
+
+    &lt;link rel="stylesheet" href="style.css"&gt;
   &lt;/head&gt;
 
   &lt;body&gt;
+    &lt;h1&gt;Serverless React PWA on AWS&lt;/h1&gt;
+
+    &lt;noscript&gt;
+      &lt;p&gt;Opsss... your JavaScript looks disabled 😒&lt;/p&gt;
+    &lt;/noscript&gt;
+
+    &lt;script&gt;
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('cache.js', { scope: '/' })
+        })
+      }
+    &lt;/script&gt;
   &lt;/body&gt;
 &lt;/html&gt;</code></pre>
+
+    <h2>Directory structure</h2>
+
+    <p>
+      This is the complete list of files I added to get a working Progressive Web App.
+    <p>
+
+    <ul>
+
+      <li>index.html</li>
+      <li>style.css</li>
+      <li>favicon.ico</li>
+      <li>manifest.json</li>
+      <li>cache.js</li>
+      <li>images/logo-192x192.png</li>
+      <li>images/logo-512x512.png</li>
+    </ul>
 
     <h2>The manifest</h2>
 
@@ -86,6 +163,78 @@
   "scope": "/",
   "theme_color": "#333333"
 }</code></pre>
+
+    <h2>Register a service worker</h2>
+
+    <p>
+      Here it is where the magic happens. The <a href="https://developers.google.com/web/tools/lighthouse/audits/registered-service-worker" target="_blank">service worker</a> is the technology that enables your app to use many Progressive Web App features, such as offline and add to homescreen.
+      You already added the code to register a service worker at the bottom of your Homepage. You need also to add a <em>cache.js</em> file that implements a cache strategy.
+    </p>
+
+    <pre><code>const CACHE_NAME = 'cache-v0.0.0'
+const CACHED_URLS = [
+  '/',
+  '/manifest.json',
+  '/images/logo-192x192.png',
+  '/images/logo-512x512.png',
+  '/style.css'
+]
+
+// Open cache on install.
+self.addEventListener('install', event => {
+  event.waitUntil(async function () {
+    const cache = await caches.open(CACHE_NAME)
+
+    await cache.addAll(CACHED_URLS)
+  }())
+})
+
+// Cache and update with stale-while-revalidate policy.
+self.addEventListener('fetch', event =&gt; {
+  const { request } = event
+
+  if (request.cache === 'only-if-cached' &amp;&amp; request.mode !== 'same-origin') {
+    return
+  }
+
+  event.respondWith(async function () {
+    const cache = await caches.open(CACHE_NAME)
+
+    const cachedResponsePromise = await cache.match(request)
+    const networkResponsePromise = fetch(request)
+
+    if (request.url.startsWith(self.location.origin)) {
+      event.waitUntil(async function () {
+        const networkResponse = await networkResponsePromise
+
+        await cache.put(request, networkResponse.clone())
+      }())
+    }
+
+    return cachedResponsePromise || networkResponsePromise
+  }())
+})
+
+// Clean up caches other than current.
+self.addEventListener('activate', event =&gt; {
+  event.waitUntil(async function () {
+    const cacheNames = await caches.keys()
+
+    await Promise.all(
+      cacheNames.filter((cacheName) =&gt; {
+        const deleteThisCache = cacheName !== CACHE_NAME
+
+        return deleteThisCache
+      }).map(cacheName =&gt; caches.delete(cacheName))
+    )
+  }())
+})</code></pre>
+
+    <h2>Make your app installable</h2>
+
+    <p>
+    We are almost done! To make your app installable, another prerequisite is that it is served over HTTPS and that HTTP request are redirected to HTTPS. If you want to give it a try without buying a domain, you can use <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>. By the way, this webiste itself is a PWA and it is hosted in this repository: <a href="https://github.com/react-pwa/react-pwa.github.io">react-pwa/react-pwa.github.io</a>.
+    </p>
 
     <script>
       if ('serviceWorker' in navigator) {
