@@ -13,9 +13,9 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/Serverless-React-PWA-on-AWS/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#343634",
-  "scope": "/Serverless-React-PWA-on-AWS/",
+  "scope": "/",
   "theme_color": "#343634"
 }
